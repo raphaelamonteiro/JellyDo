@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JellyDo - Visualização</title>
+    <link rel="stylesheet" href="/src/style/style.css">
+
+</head>
+
+<body>
+    <!-- Bolhas de fundo -->
+    <div class="bubble" style="width: 80px; height: 80px; top: 10%; left: 5%;"></div>
+    <div class="bubble" style="width: 40px; height: 40px; top: 20%; left: 90%;"></div>
+    <div class="bubble" style="width: 60px; height: 60px; top: 50%; left: 7%;"></div>
+    <div class="bubble" style="width: 30px; height: 30px; top: 70%; left: 85%;"></div>
+    <div class="bubble" style="width: 50px; height: 50px; top: 85%; left: 15%;"></div>
+
+    <!-- Cabeçalho -->
+    <header class="header">
+        <div class="logo">
+            <div class="jellyfish">🐙</div>
+            <h1>JellyDo</h1>
+        </div>
+        <p>Deixe suas tarefas flutuarem suavemente como águas-vivas</p>
+    </header>
+
+    <!-- Conteúdo principal -->
+    <div class="main-container">
+        <!-- Seção do formulário -->
+        <section class="form-section">
+            <h2>🐠 Adicionar Nova Tarefa</h2>
+
+            <div class="form-group">
+                <label for="task-name">Nome da Tarefa:</label>
+                <input type="text" id="task-name" placeholder="Ex: Estudar JavaScript">
+            </div>
+
+            <div class="form-group">
+                <label for="task-category">Categoria:</label>
+                <select id="task-category">
+                    <option value="">Selecione uma categoria</option>
+                    <option value="Trabalho">🐚 Trabalho</option>
+                    <option value="Estudos">📚 Estudos</option>
+                    <option value="Pessoal">🏠 Pessoal</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="task-priority">Prioridade:</label>
+                <select id="task-priority">
+                    <option value="">Selecione a prioridade</option>
+                    <option value="Alta">🔥 Alta</option>
+                    <option value="Média">🌊 Média</option>
+                    <option value="Baixa">🐌 Baixa</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="task-date">Data Limite:</label>
+                <input type="date" id="task-date">
+            </div>
+
+            <button class="btn-add">✨ Adicionar Tarefa</button>
+        </section>
+
+        <!-- Seção de tarefas -->
+        <section class="tasks-section">
+            <div class="filters">
+                <h2>🔍 Filtros</h2>
+
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label for="filter-category">Filtrar por Categoria:</label>
+                        <select id="filter-category">
+                            <option value="all">Todas as categorias</option>
+                            <option value="Trabalho">🐚 Trabalho</option>
+                            <option value="Estudos">📚 Estudos</option>
+                            <option value="Pessoal">🏠 Pessoal</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="sort-by">Ordenar por:</label>
+                        <select id="sort-by">
+                            <option value="data">📅 Data</option>
+                            <option value="prioridade">⚡ Prioridade</option>
+                            <option value="nome">🔤 Nome</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="task-counter">
+                    <span>📊 Total: <strong>3</strong></span>
+                    <span>✅ Concluídas: <strong>1</strong></span>
+                    <span>⏳ Pendentes: <strong>2</strong></span>
+                </div>
+            </div>
+
+            <div class="tasks-container">
+                <h2>📋 Suas Tarefas</h2>
+
+                <div id="tasks-list">
+                    <!-- Tarefa 1 -->
+                    <div class="task-card">
+                        <div class="task-header">
+                            <h3>Reunião com cliente</h3>
+                            <span class="task-category">🐚 Trabalho</span>
+                        </div>
+
+                        <div class="task-details">
+                            <span class="priority-badge priority-alta">🔥 Alta Prioridade</span>
+                            <span class="task-date">📅 15/12/2024</span>
+                        </div>
+
+                        <div class="task-actions">
+                            <button class="btn-complete">✅ Concluir</button>
+                            <button class="btn-delete">🗑️ Excluir</button>
+                        </div>
+                    </div>
+
+                    <!-- Tarefa 2 -->
+                    <div class="task-card">
+                        <div class="task-header">
+                            <h3>Estudar JavaScript</h3>
+                            <span class="task-category">📚 Estudos</span>
+                        </div>
+
+                        <div class="task-details">
+                            <span class="priority-badge priority-media">🌊 Média Prioridade</span>
+                            <span class="task-date">📅 18/12/2024</span>
+                        </div>
+
+                        <div class="task-actions">
+                            <button class="btn-complete">✅ Concluir</button>
+                            <button class="btn-delete">🗑️ Excluir</button>
+                        </div>
+                    </div>
+
+                    <!-- Tarefa 3 (concluída) -->
+                    <div class="task-card" style="opacity: 0.6; text-decoration: line-through;">
+                        <div class="task-header">
+                            <h3>Comprar presentes</h3>
+                            <span class="task-category">🏠 Pessoal</span>
+                        </div>
+
+                        <div class="task-details">
+                            <span class="priority-badge priority-baixa">🐌 Baixa Prioridade</span>
+                            <span class="task-date">📅 20/12/2024</span>
+                        </div>
+
+                        <div class="task-actions">
+                            <button class="btn-complete">↶ Desfazer</button>
+                            <button class="btn-delete">🗑️ Excluir</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Script simples para demonstrar interação
+        document.querySelectorAll('.btn-complete').forEach(button => {
+            button.addEventListener('click', function () {
+                const card = this.closest('.task-card');
+                if (card.style.opacity === '0.6') {
+                    card.style.opacity = '1';
+                    card.style.textDecoration = 'none';
+                    this.textContent = '✅ Concluir';
+                } else {
+                    card.style.opacity = '0.6';
+                    card.style.textDecoration = 'line-through';
+                    this.textContent = '↶ Desfazer';
+                }
+            });
+        });
+
+        document.querySelectorAll('.btn-delete').forEach(button => {
+            button.addEventListener('click', function () {
+                this.closest('.task-card').style.display = 'none';
+            });
+        });
+    </script>
+</body>
+
+</html>
