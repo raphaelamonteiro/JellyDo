@@ -1,187 +1,124 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JellyDo - Visualização</title>
+    <title>JellyDo - Sua agenda de tarefas inteligente</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/src/style/style.css">
-
+    <link rel="icon" type="image/x-icon" href="/src/assets/images/favicon.png">
+    <!-- Corrigi o caminho do JavaScript -->
+<script type="module" src="/src/js/main.js"></script>
 </head>
 
 <body>
-    <!-- Bolhas de fundo -->
-    <div class="bubble" style="width: 80px; height: 80px; top: 10%; left: 5%;"></div>
-    <div class="bubble" style="width: 40px; height: 40px; top: 20%; left: 90%;"></div>
-    <div class="bubble" style="width: 60px; height: 60px; top: 50%; left: 7%;"></div>
-    <div class="bubble" style="width: 30px; height: 30px; top: 70%; left: 85%;"></div>
-    <div class="bubble" style="width: 50px; height: 50px; top: 85%; left: 15%;"></div>
+    <div class="container">
+        <header>
+            <div class="nome">
+                <h1>JellyDo</h1>
+            </div>
+            <div class="toggle-container">
+                <span class="toggle-text">Modo Claro</span>
+                <div class="toggle" id="theme-toggle">
+                    <div class="toggle-handle"></div>
+                </div>
+                <span class="toggle-text">Modo Escuro</span>
+            </div>
+        </header>
 
-    <!-- Cabeçalho -->
-    <header class="header">
-        <div class="logo">
-            <div class="jellyfish">🐙</div>
-            <h1>JellyDo</h1>
+        <div class="main-container">
+            <!-- Seção do formulário -->
+            <section class="form-section">
+                <h2>Adicionar Nova Tarefa</h2>
+                <form id="task-form" class="task-form">
+                    <!-- Campo Nome -->
+                    <div class="form-group">
+                        <label for="task-name">Nome da Tarefa:</label>
+                        <input type="text" id="task-name" placeholder="Ex: Estudar JavaScript" required>
+                    </div>
+
+                    <!-- Campo Categoria -->
+                    <div class="form-group">
+                        <label for="task-category">Categoria</label>
+                        <select id="task-category" required>
+                            <option value="">Selecione uma categoria...</option>
+                            <option value="trabalho">Trabalho</option>
+                            <option value="estudos">Estudos</option>
+                            <option value="pessoal">Pessoal</option>
+                            <option value="saude">Saúde</option>
+                        </select>
+                    </div>
+
+                    <!-- Linha com Prioridade e Data -->
+                    <div class="form-row">
+                        <!-- Prioridade -->
+                        <div class="form-group">
+                            <label for="task-priority">Prioridade</label>
+                            <select id="task-priority" required>
+                                <option value="">Selecione a prioridade</option>
+                                <option value="alta">Alta</option>
+                                <option value="media">Média</option>
+                                <option value="baixa">Baixa</option>
+                            </select>
+                        </div>
+
+                        <!-- Data Limite -->
+                        <div class="form-group">
+                            <label for="task-date">Data Limite</label>
+                            <input type="date" id="task-date" required>
+                        </div>
+                    </div>
+
+                    <!-- Botão de Submit -->
+                    <button type="submit" class="btn-add">
+                        <i class="fas fa-plus"></i> Adicionar Tarefa
+                    </button>
+                </form>
+            </section>
+
+            <!-- Seção de tarefas - REMOVA AS TAREFAS ESTÁTICAS -->
+            <section class="tasks-section">
+                <h2>Suas Tarefas</h2>
+                <div id="tasks-container" class="tasks-container">
+                    <!-- As tarefas serão carregadas dinamicamente pelo JavaScript -->
+                </div>
+            </section>
         </div>
-        <p>Deixe suas tarefas flutuarem suavemente como águas-vivas</p>
-    </header>
-
-    <!-- Conteúdo principal -->
-    <div class="main-container">
-        <!-- Seção do formulário -->
-        <section class="form-section">
-            <h2>🐠 Adicionar Nova Tarefa</h2>
-
-            <div class="form-group">
-                <label for="task-name">Nome da Tarefa:</label>
-                <input type="text" id="task-name" placeholder="Ex: Estudar JavaScript">
-            </div>
-
-            <div class="form-group">
-                <label for="task-category">Categoria:</label>
-                <select id="task-category">
-                    <option value="">Selecione uma categoria</option>
-                    <option value="Trabalho">🐚 Trabalho</option>
-                    <option value="Estudos">📚 Estudos</option>
-                    <option value="Pessoal">🏠 Pessoal</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="task-priority">Prioridade:</label>
-                <select id="task-priority">
-                    <option value="">Selecione a prioridade</option>
-                    <option value="Alta">🔥 Alta</option>
-                    <option value="Média">🌊 Média</option>
-                    <option value="Baixa">🐌 Baixa</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="task-date">Data Limite:</label>
-                <input type="date" id="task-date">
-            </div>
-
-            <button class="btn-add">✨ Adicionar Tarefa</button>
-        </section>
-
-        <!-- Seção de tarefas -->
-        <section class="tasks-section">
-            <div class="filters">
-                <h2>🔍 Filtros</h2>
-
-                <div class="filter-row">
-                    <div class="filter-group">
-                        <label for="filter-category">Filtrar por Categoria:</label>
-                        <select id="filter-category">
-                            <option value="all">Todas as categorias</option>
-                            <option value="Trabalho">🐚 Trabalho</option>
-                            <option value="Estudos">📚 Estudos</option>
-                            <option value="Pessoal">🏠 Pessoal</option>
-                        </select>
-                    </div>
-
-                    <div class="filter-group">
-                        <label for="sort-by">Ordenar por:</label>
-                        <select id="sort-by">
-                            <option value="data">📅 Data</option>
-                            <option value="prioridade">⚡ Prioridade</option>
-                            <option value="nome">🔤 Nome</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="task-counter">
-                    <span>📊 Total: <strong>3</strong></span>
-                    <span>✅ Concluídas: <strong>1</strong></span>
-                    <span>⏳ Pendentes: <strong>2</strong></span>
-                </div>
-            </div>
-
-            <div class="tasks-container">
-                <h2>📋 Suas Tarefas</h2>
-
-                <div id="tasks-list">
-                    <!-- Tarefa 1 -->
-                    <div class="task-card">
-                        <div class="task-header">
-                            <h3>Reunião com cliente</h3>
-                            <span class="task-category">🐚 Trabalho</span>
-                        </div>
-
-                        <div class="task-details">
-                            <span class="priority-badge priority-alta">🔥 Alta Prioridade</span>
-                            <span class="task-date">📅 15/12/2024</span>
-                        </div>
-
-                        <div class="task-actions">
-                            <button class="btn-complete">✅ Concluir</button>
-                            <button class="btn-delete">🗑️ Excluir</button>
-                        </div>
-                    </div>
-
-                    <!-- Tarefa 2 -->
-                    <div class="task-card">
-                        <div class="task-header">
-                            <h3>Estudar JavaScript</h3>
-                            <span class="task-category">📚 Estudos</span>
-                        </div>
-
-                        <div class="task-details">
-                            <span class="priority-badge priority-media">🌊 Média Prioridade</span>
-                            <span class="task-date">📅 18/12/2024</span>
-                        </div>
-
-                        <div class="task-actions">
-                            <button class="btn-complete">✅ Concluir</button>
-                            <button class="btn-delete">🗑️ Excluir</button>
-                        </div>
-                    </div>
-
-                    <!-- Tarefa 3 (concluída) -->
-                    <div class="task-card" style="opacity: 0.6; text-decoration: line-through;">
-                        <div class="task-header">
-                            <h3>Comprar presentes</h3>
-                            <span class="task-category">🏠 Pessoal</span>
-                        </div>
-
-                        <div class="task-details">
-                            <span class="priority-badge priority-baixa">🐌 Baixa Prioridade</span>
-                            <span class="task-date">📅 20/12/2024</span>
-                        </div>
-
-                        <div class="task-actions">
-                            <button class="btn-complete">↶ Desfazer</button>
-                            <button class="btn-delete">🗑️ Excluir</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
     </div>
 
     <script>
-        // Script simples para demonstrar interação
-        document.querySelectorAll('.btn-complete').forEach(button => {
-            button.addEventListener('click', function () {
-                const card = this.closest('.task-card');
-                if (card.style.opacity === '0.6') {
-                    card.style.opacity = '1';
-                    card.style.textDecoration = 'none';
-                    this.textContent = '✅ Concluir';
-                } else {
-                    card.style.opacity = '0.6';
-                    card.style.textDecoration = 'line-through';
-                    this.textContent = '↶ Desfazer';
-                }
-            });
+        // Alternar entre temas
+        const themeToggle = document.getElementById('theme-toggle');
+        const body = document.body;
+        const toggleTexts = document.querySelectorAll('.toggle-text');
+
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('modo-escuro');
+
+            // Atualizar texto do toggle
+            if (body.classList.contains('modo-escuro')) {
+                toggleTexts[0].textContent = 'Modo Escuro';
+                toggleTexts[1].textContent = 'Modo Claro';
+            } else {
+                toggleTexts[0].textContent = 'Modo Claro';
+                toggleTexts[1].textContent = 'Modo Escuro';
+            }
+
+            // Salvar preferência no localStorage
+            localStorage.setItem('theme', body.classList.contains('modo-escuro') ? 'dark' : 'light');
         });
 
-        document.querySelectorAll('.btn-delete').forEach(button => {
-            button.addEventListener('click', function () {
-                this.closest('.task-card').style.display = 'none';
-            });
-        });
+        // Verificar preferência salva
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            body.classList.add('modo-escuro');
+            toggleTexts[0].textContent = 'Modo Escuro';
+            toggleTexts[1].textContent = 'Modo Claro';
+        }
+
+        // REMOVA O EVENT LISTENER ANTIGO DO FORMULÁRIO
+        // O novo sistema JavaScript vai cuidar disso
     </script>
 </body>
 
