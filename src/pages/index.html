@@ -8,8 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/src/style/style.css">
     <link rel="icon" type="image/x-icon" href="/src/assets/images/favicon.png">
-    <!-- Corrigi o caminho do JavaScript -->
-<script type="module" src="/src/js/main.js"></script>
+    <script type="module" src="/src/js/main.js"></script>
 </head>
 
 <body>
@@ -80,6 +79,64 @@
             <!-- Seção de tarefas - REMOVA AS TAREFAS ESTÁTICAS -->
             <section class="tasks-section">
                 <h2>Suas Tarefas</h2>
+                <!-- Adicione esta seção antes do tasks-container -->
+                <div class="filters-section">
+                    <h3>Filtrar Tarefas</h3>
+
+                    <div class="filters-row">
+                        <!-- Filtro por Categoria -->
+                        <div class="filter-group">
+                            <label for="filter-category">Categoria:</label>
+                            <select id="filter-category" class="filter-select">
+                                <option value="all">Todas categorias</option>
+                                <option value="trabalho">Trabalho</option>
+                                <option value="estudos">Estudos</option>
+                                <option value="pessoal">Pessoal</option>
+                                <option value="saude">Saúde</option>
+                            </select>
+                        </div>
+
+                        <!-- Filtro por Prioridade -->
+                        <div class="filter-group">
+                            <label for="filter-priority">Prioridade:</label>
+                            <select id="filter-priority" class="filter-select">
+                                <option value="all">Todas prioridades</option>
+                                <option value="alta">Alta</option>
+                                <option value="media">Média</option>
+                                <option value="baixa">Baixa</option>
+                            </select>
+                        </div>
+
+                        <!-- Filtro por Status -->
+                        <div class="filter-group">
+                            <label for="filter-status">Status:</label>
+                            <select id="filter-status" class="filter-select">
+                                <option value="all">Todas</option>
+                                <option value="pending">Pendentes</option>
+                                <option value="completed">Concluídas</option>
+                            </select>
+                        </div>
+
+                        <!-- Ordenação -->
+                        <div class="filter-group">
+                            <label for="filter-sort">Ordenar por:</label>
+                            <select id="filter-sort" class="filter-select">
+                                <option value="date">Data</option>
+                                <option value="priority">Prioridade</option>
+                                <option value="name">Nome</option>
+                                <option value="completed">Status</option>
+                            </select>
+                        </div>
+
+                        <!-- Botão de Limpar Filtros -->
+                        <div class="filter-group">
+                            <button id="clear-filters" class="btn-filter">
+                                <i class="fas fa-times"></i> Limpar Filtros
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                 <div id="tasks-container" class="tasks-container">
                     <!-- As tarefas serão carregadas dinamicamente pelo JavaScript -->
                 </div>
@@ -116,9 +173,6 @@
             toggleTexts[0].textContent = 'Modo Escuro';
             toggleTexts[1].textContent = 'Modo Claro';
         }
-
-        // REMOVA O EVENT LISTENER ANTIGO DO FORMULÁRIO
-        // O novo sistema JavaScript vai cuidar disso
     </script>
 </body>
 

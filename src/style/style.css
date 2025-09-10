@@ -5,7 +5,7 @@
       padding: 0;
       box-sizing: border-box;
       font-family: "Rubik",
-          sans-serif;
+    sans-serif;
       transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease;
   }
 
@@ -15,7 +15,7 @@
       --claro-container: rgba(255, 255, 255, 0.9);
       --claro-texto: #2a6fa5;
       --claro-destaque: #ff8fab;
-      --claro-borda: #8ecae6;
+      --claro-borda: #EBD6FB;
       --claro-sombra: rgba(142, 202, 230, 0.3);
       --claro-botao: linear-gradient(135deg, #ff8fab 0%, #ffb3c6 100%);
 
@@ -316,6 +316,170 @@
       background: var(--escuro-botao);
   }
 
+  .task-card.completed {
+      opacity: 0.7;
+      background: rgba(255, 255, 255, 0.3);
+  }
+
+  .task-card.completed .task-info h3 {
+      text-decoration: line-through;
+      color: #888;
+  }
+
+  /* No modo escuro */
+  .modo-escuro .task-card.completed {
+      background: rgba(255, 255, 255, 0.1);
+  }
+
+  .modo-escuro .task-card.completed .task-info h3 {
+      color: #AAA;
+  }
+
+  /* Estilos para a seção de filtros */
+  .filters-section {
+      background: var(--claro-container);
+      padding: 20px;
+      border-radius: 15px;
+      margin-bottom: 20px;
+      border: 2px solid var(--claro-borda);
+  }
+
+  .modo-escuro .filters-section {
+      background: var(--escuro-container);
+      border: 2px solid var(--escuro-borda);
+  }
+
+  .filters-section h3 {
+      margin-bottom: 15px;
+      color: var(--claro-destaque);
+      font-size: 1.2rem;
+  }
+
+  .modo-escuro .filters-section h3 {
+      color: var(--escuro-destaque);
+  }
+
+  .filters-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      align-items: end;
+  }
+
+  .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+  }
+
+  .filter-group label {
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--claro-texto);
+  }
+
+  .modo-escuro .filter-group label {
+      color: var(--escuro-texto);
+  }
+
+  .filter-select {
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 2px solid var(--claro-borda);
+      background: rgba(255, 255, 255, 0.8);
+      color: var(--claro-texto);
+      font-size: 0.9rem;
+  }
+
+  .modo-escuro .filter-select {
+      border: 2px solid var(--escuro-borda);
+      background: rgba(30, 40, 80, 0.5);
+      color: var(--escuro-texto);
+  }
+
+  .btn-filter {
+      padding: 10px 15px;
+      background: var(--claro-botao);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.3s ease;
+  }
+
+  .modo-escuro .btn-filter {
+      background: var(--escuro-botao);
+  }
+
+  .btn-filter:hover {
+      transform: translateY(-2px);
+      opacity: 0.9;
+  }
+
+  /* Contadores de tarefas */
+  .tasks-counters {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 15px;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      font-size: 0.9rem;
+  }
+
+  .modo-escuro .tasks-counters {
+      background: rgba(255, 255, 255, 0.1);
+  }
+
+  .counter {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+  }
+
+  .counter.total {
+      color: #3B82F6;
+  }
+
+  .counter.completed {
+      color: #10B981;
+  }
+
+  .counter.pending {
+      color: #F59E0B;
+  }
+
+  /* Botão de limpar filtros no empty state */
+  .btn-clear-filters {
+      padding: 8px 16px;
+      background: var(--claro-botao);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 10px;
+  }
+
+  .modo-escuro .btn-clear-filters {
+      background: var(--escuro-botao);
+  }
+
+  /* Responsividade */
+  @media (max-width: 768px) {
+      .filters-row {
+          grid-template-columns: 1fr;
+      }
+
+      .tasks-counters {
+          flex-direction: column;
+          gap: 5px;
+      }
+  }
+
   /* Responsividade */
   @media (max-width: 900px) {
       .main-container {
@@ -361,8 +525,4 @@
       50% {
           transform: translateY(-10px);
       }
-  }
-
-  .jellyfish {
-      animation: float 3s ease-in-out infinite;
   }
