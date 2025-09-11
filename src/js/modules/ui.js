@@ -1,18 +1,7 @@
 // ui.js - Manipulação da interface (refatorado)
 import { taskManager } from './tasks.js';
 
-// Cores em hexadecimal para categorias e prioridades
-const COLORS = {
-    trabalho: '#9ECAD6',
-    estudos: '#A3DC9A',
-    pessoal: '#CDC1FF',
-    saude: '#C5705D',
-    alta: '#DA6C6C',
-    media: '#F6EFBD',
-    baixa: '#A3DC9A',
-    default: '#B3C8CF'
-};
-
+// Remova a constante COLORS e use as variáveis CSS diretamente
 export const taskUI = {
     currentFilters: {
         category: 'all',
@@ -86,16 +75,20 @@ export const taskUI = {
 
     // === COMPONENTES DE UI ===
     createTaskCard: function (task) {
+        // Obter cores das variáveis CSS
+        const categoryColor = this.getCategoryColor(task.category);
+        const priorityColor = this.getPriorityColor(task.priority);
+
         return `
             <div class="task-card ${task.completed ? 'completed' : ''}" data-id="${task.id}">
                 <div class="task-info">
                     <h3>${this.escapeHtml(task.name)}</h3>
                     <div class="task-meta">
-                        <span class="task-category" style="color: ${COLORS[task.category] || COLORS.default}">
+                        <span class="task-category" style="color: ${categoryColor}">
                             <i class="${this.getCategoryIcon(task.category)}"></i>
                             ${this.formatCategoryName(task.category)}
                         </span>
-                        <span class="task-priority" style="color: ${COLORS[task.priority] || COLORS.default}">
+                        <span class="task-priority" style="color: ${priorityColor}">
                             <i class="${this.getPriorityIcon(task.priority)}"></i>
                             ${this.formatPriorityName(task.priority)}
                         </span>
@@ -119,10 +112,11 @@ export const taskUI = {
 
     renderEmptyState: function (container) {
         const hasFilters = Object.values(this.currentFilters).some(filter => filter !== 'all');
+        const defaultColor = this.getCssVariableValue('--claro-texto');
 
         container.innerHTML = `
             <div class="empty-state">
-                <i class="fas fa-${hasFilters ? 'search' : 'water'}" style="font-size: 3rem; color: ${COLORS.default};"></i>
+                <i class="fas fa-${hasFilters ? 'search' : 'water'}" style="font-size: 3rem; color: ${defaultColor};"></i>
                 <h3>${hasFilters ? 'Nenhuma tarefa encontrada' : 'O mar está calmo!'}</h3>
                 <p>${hasFilters ? 'Tente ajustar os filtros' : 'Adicione sua primeira tarefa para começar.'}</p>
                 ${hasFilters ? '<button class="btn-clear-filters" onclick="taskUI.clearFilters()">Limpar Filtros</button>' : ''}
@@ -288,14 +282,22 @@ export const taskUI = {
             document.body.appendChild(container);
         }
 
-        const bgColor = type === 'error' ? '#FEF2F2' : '#F0FDF4';
-        const borderColor = type === 'error' ? '#EF4444' : '#4ADE80';
+        // Usar variáveis CSS para cores
+        const bgColor = type === 'error'
+            ? this.getCssVariableValue('--claro-container')
+            : this.getCssVariableValue('--claro-container');
+        const borderColor = type === 'error'
+            ? this.getCssVariableValue('--claro-destaque')
+            : this.getCssVariableValue('--claro-destaque');
+        const textColor = type === 'error'
+            ? this.getCssVariableValue('--claro-texto')
+            : this.getCssVariableValue('--claro-texto');
         const icon = type === 'error' ? 'exclamation-circle' : 'check-circle';
 
         container.innerHTML = messages.map(msg => `
             <div class="notification" style="
                 background: ${bgColor};
-                color: ${type === 'error' ? '#EF4444' : '#166534'};
+                color: ${textColor};
                 padding: 12px;
                 margin: 8px 0;
                 border-radius: 8px;
@@ -362,6 +364,22 @@ export const taskUI = {
 
     formatDate: function (dateString) {
         return new Date(dateString).toLocaleDateString('pt-BR');
+    },
+
+    // Nova função para obter valores de variáveis CSS
+    getCssVariableValue: function (variableName) {
+        return getComputedStyle(document.documentElement).getPropertyValue(variableName).trim();
+    },
+
+    // Funções para obter cores baseadas nas variáveis CSS
+    getCategoryColor: function (category) {
+        // Use as cores padrão do tema
+        return this.getCssVariableValue('--claro-texto');
+    },
+
+    getPriorityColor: function (priority) {
+        // Use as cores padrão do tema
+        return this.getCssVariableValue('--claro-texto');
     }
 };
 

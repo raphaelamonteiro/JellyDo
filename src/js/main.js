@@ -1,189 +1,296 @@
-// main.js - Ponto de entrada da aplicação (refatorado)
-import { taskManager } from './modules/tasks.js';
-import { taskUI } from './modules/ui.js';
+// Gerenciamento de tarefas
+class TaskManager {
+    constructor() {
+        this.tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+        this.currentFilters = {
+            category: 'all',
+            priority: 'all',
+            status: 'all',
+            sort: 'date'
+        };
 
-// Configuração de logging (útil para desenvolvimento)
-const LOGGING_ENABLED = true;
+        this.init();
+    }
 
-const log = {
-    info: (message, data = null) => {
-        if (LOGGING_ENABLED) {
-            console.log(`ℹ️ ${message}`, data || '');
-        }
-    },
-    error: (message, error = null) => {
-        if (LOGGING_ENABLED) {
-            console.error(`❌ ${message}`, error || '');
-        }
-    },
-    success: (message) => {
-        if (LOGGING_ENABLED) {
-            console.log(`✅ ${message}`);
+    init() {
+        this.bindEvents();
+        this.renderTasks();
+        this.updateCounters();
+    }
+
+    bindEvents() {
+        // Formulário de nova tarefa
+        document.getElementById('task-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.addTask();
+        });
+
+        // Filtros
+        document.getElementById('filter-category').addEventListener('change', (e) => {
+            this.currentFilters.category = e.target.value;
+            this.applyFilters();
+        });
+
+        document.getElementById('filter-priority').addEventListener('change', (e) => {
+            this.currentFilters.priority = e.target.value;
+            this.applyFilters();
+        });
+
+        document.getElementById('filter-status').addEventListener('change', (e) => {
+            this.currentFilters.status = e.target.value;
+            this.applyFilters();
+        });
+
+        document.getElementById('filter-sort').addEventListener('change', (e) => {
+            this.currentFilters.sort = e.target.value;
+            this.applyFilters();
+        });
+
+        // Limpar filtros
+        document.getElementById('clear-filters').addEventListener('click', () => {
+            this.clearFilters();
+        });
+    }
+
+    addTask() {
+        const name = document.getElementById('task-name').value;
+        const category = document.getElementById('task-category').value;
+        const priority = document.getElementById('task-priority').value;
+        const date = document.getElementById('task-date').value;
+
+        const task = {
+            id: Date.now(),
+            name,
+            category,
+            priority,
+            date,
+            completed: false,
+            createdAt: new Date()
+        };
+
+        this.tasks.push(task);
+        this.saveTasks();
+        this.renderTasks();
+        this.updateCounters();
+
+        // Reset form
+        document.getElementById('task-form').reset();
+    }
+
+    toggleTask(id) {
+        this.tasks = this.tasks.map(task => {
+            if (task.id === id) {
+                return { ...task, completed: !task.completed };
+            }
+            return task;
+        });
+
+        this.saveTasks();
+        this.renderTasks();
+        this.updateCounters();
+    }
+
+    deleteTask(id) {
+        if (confirm('Tem certeza que deseja excluir esta tarefa?')) {
+            this.tasks = this.tasks.filter(task => task.id !== id);
+            this.saveTasks();
+            this.renderTasks();
+            this.updateCounters();
         }
     }
-};
 
-// Inicializa a aplicação
-export const initializeApp = () => {
-    log.info('Inicializando aplicação...');
-
-    try {
-        // Inicializa a UI (que agora inclui renderização e filtros)
-        taskUI.init();
-        log.success('UI inicializada com sucesso');
-
-        // Configura o event listener do formulário
-        setupFormListener();
-
-    } catch (error) {
-        log.error('Erro ao inicializar aplicação:', error);
-        showFatalError('Erro ao carregar a aplicação. Recarregue a página.');
+    saveTasks() {
+        localStorage.setItem('tasks', JSON.stringify(this.tasks));
     }
-};
 
-// Configura o listener do formulário
-const setupFormListener = () => {
-    const form = document.getElementById('task-form');
-
-    if (form) {
-        // Remove listener antigo se existir (para evitar duplicação)
-        form.removeEventListener('submit', handleFormSubmit);
-        form.addEventListener('submit', handleFormSubmit);
-        log.success('Event listener do formulário configurado');
-    } else {
-        log.error('Formulário não encontrado!');
+    applyFilters() {
+        this.renderTasks();
     }
-};
 
-// Manipula o envio do formulário
-const handleFormSubmit = (event) => {
-    event.preventDefault();
-    log.info('Processando envio do formulário...');
+    clearFilters() {
+        // Adicionar uma animação de feedback
+        const clearBtn = document.getElementById('clear-filters');
+        clearBtn.classList.add('filter-cleaning');
 
-    try {
-        const formData = getFormData();
-        log.info('Dados do formulário coletados:', formData);
+        // Resetar todos os filtros para valores padrão
+        document.getElementById('filter-category').value = 'all';
+        document.getElementById('filter-priority').value = 'all';
+        document.getElementById('filter-status').value = 'all';
+        document.getElementById('filter-sort').value = 'date';
 
-        const result = taskManager.addTask(formData);
+        // Atualizar os filtros atuais
+        this.currentFilters = {
+            category: 'all',
+            priority: 'all',
+            status: 'all',
+            sort: 'date'
+        };
 
-        if (result.success) {
-            handleFormSuccess(result);
-        } else {
-            handleFormErrors(result.errors);
+        // Re-renderizar as tarefas
+        this.renderTasks();
+
+        // Remover a classe após a animação
+        setTimeout(() => {
+            clearBtn.classList.remove('filter-cleaning');
+        }, 500);
+    }
+
+    filterTasks() {
+        let filteredTasks = [...this.tasks];
+
+        // Filtrar por categoria
+        if (this.currentFilters.category !== 'all') {
+            filteredTasks = filteredTasks.filter(task => task.category === this.currentFilters.category);
         }
 
-    } catch (error) {
-        log.error('Erro inesperado ao processar formulário:', error);
-        taskUI.showErrors(['Erro inesperado. Tente novamente.']);
-    }
-};
-
-// Obtém dados do formulário de forma segura
-const getFormData = () => {
-    const getValue = (id) => {
-        const element = document.getElementById(id);
-        return element ? element.value : '';
-    };
-
-    return {
-        name: getValue('task-name'),
-        category: getValue('task-category'),
-        priority: getValue('task-priority'),
-        date: getValue('task-date')
-    };
-};
-
-// Manipula sucesso no envio do formulário
-const handleFormSuccess = (result) => {
-    log.success('Tarefa adicionada com sucesso:', result.task);
-
-    // A UI agora se atualiza automaticamente através do sistema de eventos
-    // Mas garantimos que está sincronizada
-    taskUI.renderTasks();
-    taskUI.clearForm();
-    taskUI.showSuccess('Tarefa adicionada com sucesso!');
-};
-
-// Manipula erros do formulário
-const handleFormErrors = (errors) => {
-    log.error('Erros de validação encontrados:', errors);
-    taskUI.showErrors(errors);
-
-    // Destaca campos inválidos (opcional)
-    highlightInvalidFields(errors);
-};
-
-// Destaca campos inválidos (melhoria UX)
-const highlightInvalidFields = (errors) => {
-    // Remove highlights anteriores
-    document.querySelectorAll('.input-error').forEach(el => {
-        el.classList.remove('input-error');
-    });
-
-    // Aplica highlight baseado nos erros
-    errors.forEach(error => {
-        if (error.includes('nome')) {
-            document.getElementById('task-name')?.classList.add('input-error');
-        } else if (error.includes('categoria')) {
-            document.getElementById('task-category')?.classList.add('input-error');
-        } else if (error.includes('prioridade')) {
-            document.getElementById('task-priority')?.classList.add('input-error');
-        } else if (error.includes('data')) {
-            document.getElementById('task-date')?.classList.add('input-error');
+        // Filtrar por prioridade
+        if (this.currentFilters.priority !== 'all') {
+            filteredTasks = filteredTasks.filter(task => task.priority === this.currentFilters.priority);
         }
-    });
-};
 
-// Mostra erro fatal (para erros de inicialização)
-const showFatalError = (message) => {
-    const appContainer = document.getElementById('app') || document.body;
-    appContainer.innerHTML = `
-        <div style="
-            padding: 2rem;
-            text-align: center;
-            color: #dc3545;
-            background: #f8d7da;
-            border: 1px solid #f5c6cb;
-            border-radius: 8px;
-            margin: 2rem;
-        ">
-            <h2>⚠️ Erro na Aplicação</h2>
-            <p>${message}</p>
-            <button onclick="window.location.reload()" style="
-                padding: 8px 16px;
-                background: #dc3545;
-                color: white;
-                border: none;
-                border-radius: 4px;
-                cursor: pointer;
-                margin-top: 1rem;
-            ">
-                Recarregar
-            </button>
-        </div>
-    `;
-};
+        // Filtrar por status
+        if (this.currentFilters.status !== 'all') {
+            const statusFilter = this.currentFilters.status === 'completed';
+            filteredTasks = filteredTasks.filter(task => task.completed === statusFilter);
+        }
 
-// Inicia a aplicação quando o DOM estiver pronto
-log.info('Aguardando DOM...');
+        // Ordenar
+        switch (this.currentFilters.sort) {
+            case 'priority':
+                const priorityOrder = { alta: 1, media: 2, baixa: 3 };
+                filteredTasks.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
+                break;
+            case 'name':
+                filteredTasks.sort((a, b) => a.name.localeCompare(b.name));
+                break;
+            case 'completed':
+                filteredTasks.sort((a, b) => a.completed - b.completed);
+                break;
+            case 'date':
+            default:
+                filteredTasks.sort((a, b) => new Date(a.date) - new Date(b.date));
+                break;
+        }
 
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initializeApp);
-} else {
-    // DOM já está pronto
-    initializeApp();
+        return filteredTasks;
+    }
+
+    renderTasks() {
+        const tasksContainer = document.getElementById('tasks-container');
+        const filteredTasks = this.filterTasks();
+
+        if (filteredTasks.length === 0) {
+            tasksContainer.innerHTML = `
+                <div class="empty-state">
+                   <i class="fa-solid fa-water"></i>
+                    <p>O mar está calmo hoje! </p>
+                    <button class="btn-clear-filters" id="clear-filters-empty">Limpar Filtros</button>
+                </div>
+            `;
+
+            document.getElementById('clear-filters-empty').addEventListener('click', () => {
+                this.clearFilters();
+            });
+
+            return;
+        }
+
+        tasksContainer.innerHTML = filteredTasks.map(task => `
+            <div class="task-card ${task.completed ? 'completed' : ''}">
+                <div class="task-info">
+                    <h3>${task.name}</h3>
+                    <div class="task-meta">
+                        <span class="task-category">
+                            <i class="fas fa-tag"></i> 
+                            ${this.getCategoryName(task.category)}
+                        </span>
+                        <span class="task-priority priority-${task.priority}">
+                            <i class="fas fa-flag"></i> 
+                            ${this.getPriorityName(task.priority)}
+                        </span>
+                        <span class="task-date">
+                            <i class="fas fa-calendar"></i> 
+                            ${new Date(task.date).toLocaleDateString('pt-BR')}
+                        </span>
+                    </div>
+                </div>
+                <div class="task-actions">
+                    <button class="btn-action btn-toggle" data-id="${task.id}">
+                        <i class="fas fa-${task.completed ? 'undo' : 'check'}"></i>
+                    </button>
+                    <button class="btn-action btn-delete" data-id="${task.id}">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        `).join('');
+
+        // Adicionar event listeners aos botões
+        document.querySelectorAll('.btn-toggle').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const id = parseInt(e.currentTarget.getAttribute('data-id'));
+                this.toggleTask(id);
+            });
+        });
+
+        document.querySelectorAll('.btn-delete').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const id = parseInt(e.currentTarget.getAttribute('data-id'));
+                this.deleteTask(id);
+            });
+        });
+    }
+
+    updateCounters() {
+        const total = this.tasks.length;
+        const completed = this.tasks.filter(task => task.completed).length;
+        const pending = total - completed;
+
+        // Criar ou atualizar contadores
+        let countersElement = document.querySelector('.tasks-counters');
+
+        if (!countersElement) {
+            countersElement = document.createElement('div');
+            countersElement.className = 'tasks-counters';
+            document.querySelector('.tasks-section').insertBefore(countersElement, document.getElementById('tasks-container'));
+        }
+
+        countersElement.innerHTML = `
+            <div class="counter total">
+                <i class="fas fa-tasks"></i> Total: ${total}
+            </div>
+            <div class="counter completed">
+                <i class="fas fa-check-circle"></i> Concluídas: ${completed}
+            </div>
+            <div class="counter pending">
+                <i class="fas fa-clock"></i> Pendentes: ${pending}
+            </div>
+        `;
+    }
+
+    getCategoryName(category) {
+        const categories = {
+            'trabalho': 'Trabalho',
+            'estudos': 'Estudos',
+            'pessoal': 'Pessoal',
+            'saude': 'Saúde'
+        };
+
+        return categories[category] || category;
+    }
+
+    getPriorityName(priority) {
+        const priorities = {
+            'alta': 'Alta',
+            'media': 'Média',
+            'baixa': 'Baixa'
+        };
+
+        return priorities[priority] || priority;
+    }
 }
 
-// Expõe funções globais para debug (apenas desenvolvimento)
-if (process.env.NODE_ENV === 'development') {
-    window.taskManager = taskManager;
-    window.taskUI = taskUI;
-    window.debugApp = {
-        reload: () => initializeApp(),
-        getTasks: () => taskManager.getTasks(),
-        clearAll: () => {
-            localStorage.clear();
-            initializeApp();
-        }
-    };
-}
+// Inicializar quando o DOM estiver carregado
+document.addEventListener('DOMContentLoaded', () => {
+    new TaskManager();
+});
