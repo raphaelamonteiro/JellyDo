@@ -153,25 +153,6 @@ class TaskManager {
             const statusFilter = this.currentFilters.status === 'completed';
             filteredTasks = filteredTasks.filter(task => task.completed === statusFilter);
         }
-
-        // Ordenar
-        switch (this.currentFilters.sort) {
-            case 'priority':
-                const priorityOrder = { alta: 1, media: 2, baixa: 3 };
-                filteredTasks.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
-                break;
-            case 'name':
-                filteredTasks.sort((a, b) => a.name.localeCompare(b.name));
-                break;
-            case 'completed':
-                filteredTasks.sort((a, b) => a.completed - b.completed);
-                break;
-            case 'date':
-            default:
-                filteredTasks.sort((a, b) => new Date(a.date) - new Date(b.date));
-                break;
-        }
-
         return filteredTasks;
     }
 

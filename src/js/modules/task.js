@@ -240,33 +240,6 @@ export const taskManager = {
         return tasks;
     },
 
-    /**
-     * Ordena tarefas por critério
-     * @param {Array} tasks - Array de tarefas
-     * @param {string} sortBy - Critério de ordenação
-     * @returns {Array} Tarefas ordenadas
-     */
-    sortTasks: (tasks, sortBy = 'date') => {
-        const sortedTasks = [...tasks];
-
-        switch (sortBy) {
-            case 'name':
-                return sortedTasks.sort((a, b) => a.name.localeCompare(b.name));
-
-            case 'priority':
-                const priorityOrder = { alta: 0, media: 1, baixa: 2 };
-                return sortedTasks.sort((a, b) =>
-                    priorityOrder[a.priority] - priorityOrder[b.priority]
-                );
-
-            case 'date':
-            default:
-                return sortedTasks.sort((a, b) =>
-                    new Date(a.date) - new Date(b.date)
-                );
-        }
-    },
-
     // === UTILITÁRIOS ===
 
     /**
